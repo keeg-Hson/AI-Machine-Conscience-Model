@@ -1,0 +1,41 @@
+# Core
+python>=3.10
+numpy
+pandas
+
+# NLP & ML
+torch
+transformers
+sentence-transformers
+spacy
+textblob
+nltk
+
+# Vector search
+faiss-cpu
+gensim
+
+# Database
+psycopg2-binary  # PostgreSQL
+pymongo          # MongoDB
+sqlalchemy
+
+# Symbolic + Graph Memory
+networkx
+neo4j
+
+# Visualization & Interface
+matplotlib
+plotly
+streamlit
+flask
+fastapi
+uvicorn
+
+# Optional: Langchain, for LLM chaining (if desired later)
+langchain
+openai
+
+# Utils
+scikit-learn
+tqdm
