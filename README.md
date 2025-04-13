@@ -1,6 +1,8 @@
 # OrphicaAI
 A bit more of an esoteric project of mine, more academic in nature more than anything. this poses as a database model that seeks to map out a machine like environment similar to how human consciousness parses the brain. details in README.md
 
+![OrphicaAI_GitHub_Social_Preview](https://github.com/user-attachments/assets/17f5bc23-d591-48a3-8eb5-f3bef98a6ca9)
+
 ## ok, here we are
 A bit more of an esoteric project of mine, more academic in nature more than anything. this poses as a database model that seeks to map out a machine like enviornment similar to how consciousness parses the human subconscious and draws associations with relevance to the world around it. in other words, this is an experiment to see if i can create a machine learning model that can replicate conscious thought processes in a computational enviornment.
 
