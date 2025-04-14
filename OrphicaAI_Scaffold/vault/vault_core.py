@@ -56,7 +56,7 @@ def recall_by_symbol(symbol:str, max_results: int=5) -> list:
     associated_ids=SYMBOLIC_INDEX.get(symbol, [])[:max_results] #links memory IDs to relevant symbols
     return [VAULT[entry_id] for entry_id in associated_ids if entry_id in VAULT] #RETURNS FULL MEMORY OBJECTS 
 
-def resurface_candidate(content_vector:dict) -> str:
+def resurface_candidate(context_vector:dict) -> list:
     """
     returns a list of letent memories that are likely to become relevant to user down the road.
     -would compare embeddings/emotinal vectors within full release
