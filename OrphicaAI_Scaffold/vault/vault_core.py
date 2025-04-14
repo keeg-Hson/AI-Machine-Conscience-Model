@@ -47,25 +47,39 @@ def get_entry(entry_id:str):
     """
     retrieves user entry by ID
     """
+    return VAULT.get(entry_id) #pulls memory from subnconscious utilizing assigned unique ID
 
-def recall_by_symbol():
+def recall_by_symbol(symbol:str, max_results: int=5) -> list:
     """
     retrieves user entries with use of symbolic tagging
     """
+    associated_ids=SYMBOLIC_INDEX.get(symbol, [])[:max_results] #links memory IDs to relevant symbols
+    return [VAULT[entry_id] for entry_id in associated_ids if entry_id in VAULT] #RETURNS FULL MEMORY OBJECTS 
 
 def resurface_candidate(content_vector:dict) -> str:
     """
     returns a list of letent memories that are likely to become relevant to user down the road.
     -would compare embeddings/emotinal vectors within full release
     """
+    candidates=[] #empty list to store potential candidates
+    for entry in VAULT.values(): #checks every stored memory from cumulative inputs set
+        for k in context_vector: #parse each key words/associated 'emotional tag' within current context
+            if k in entry['emotion_vector']: #checks if there is emptional overlap within memory
+                candidates.append(entry) #add memory to candiate list
+                break #stops after first match, as we only need one to add to the list. prevents 'double coutning' 
+        return sorted(candidates, key=lambda x: -x['depth_weight'])[:5] #sort by importance, returns top matches
 
 ##Memory Maintenance:
 def reinforce(entry_id:str, boost: float=0.01):
     """
     fortifies salience of a given user entry, as if it were being consciously recalled.
     """
+    if entry_id in VAULT:
+        VAULT[entry_id]['depth_weight']+=boost #increases the 'depth weight' of each memory entry (i.e: 'importance' factor)
+        reinforce_entry(entry_id, boost) #calls external function to handle symbolic/index boost as well
 
 def decay_all():
     """
     global dacay tick: lowers the weighting factor associated with all user entires over time.
     """
+    decay_weights(VAULT) #CALLS DECAY FUNCTION TO AGE ALL ASSOCIATED MEMORY ENTRIES
