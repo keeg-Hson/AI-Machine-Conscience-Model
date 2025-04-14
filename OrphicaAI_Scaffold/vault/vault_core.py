@@ -13,9 +13,24 @@ SYMBOLIC_INDEX={} #SYMBOL TO ENTRY LOOKIP TABLE (SIMILAR TO ARCHETYOPAL ANCHORS 
 
 ##Core Entry Structure
 def create_entry():
-"""
-Creates and returns fully formulated memory entry from user input.
-"""
+    """
+    Creates and returns fully formulated memory entry from user input.
+    """
+
+    entry_id=str(uuid4()) #generation of a unique user ID for given memory entry
+    timestamp=metadata.get('timestamp', datetime.utcnow().isoformat()) #use of currently existtent timestamp, or generation of a new one is deemed necessary
+
+    emotion_vector=classify_emotions(content) #deals with assessment of emotional makeup and associated undertimes, context of content in question
+    symbols=find_symbolic_associations(content) #deals with extraction of symbolic tags, as per the user input. could take form in the shape of recurring themes, images, archetypes, etc.
+
+    #creation of full memory entry object
+    entry={} #TBD: define entry structure 
+
+    VAULT[entry_id]=entry #save memory into larger subconscious repository
+    tag_entry(entry_id, symbols) #adds tags to symbolic index for retrieval purposes
+
+    return entry #returns full memory entry object in question. basically, end of the function that concocts all computations together, as 'return' statements generally intend to do X)
+
 
 def get_entry(entry_id:str):
     """
