@@ -15,6 +15,8 @@ SYMBOLIC_INDEX={} #SYMBOL TO ENTRY LOOKIP TABLE (SIMILAR TO ARCHETYOPAL ANCHORS 
 def create_entry():
     """
     Creates and returns fully formulated memory entry from user input.
+
+    METADATA, CONTENT VARIABLES OT BE DEFINED. HIGHLIGHTED IN THE GOOGLE DOC!
     """
 
     entry_id=str(uuid4()) #generation of a unique user ID for given memory entry
