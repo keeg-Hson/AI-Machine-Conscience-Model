@@ -19,3 +19,22 @@ One that is exactly modeled after an individual mind, and individual sentience. 
 
 This could honestly become like some sort of really cool psychology tool i think if i really get this right. may just be some python/SQL/other shit but i trust in me (and after all, ML is getting powerful yall)
 
+## scrap
+I wrote the following in like 5 minutes waiting for a coffee, but this highlights the projects main scope quite well i think. its messy, but what are you gonna do about it:
+
+-ML model that weeks to emulate human conscious processes. 
+
+-apends user info/inputs inot a unique dataset, deals with data w/ associated algorithm to be. 
+
+-algorithm to act as 'subset' of users mind/psyche; this is effectively like porting the users conscious stream/sentience into a machine enviornment. 
+
+-this model will also be able to be downloaded (its cognitive workings/profile indicidual user data collective), with the user being able to take their conscious digital profile and port the associated curated dataset/trained ml model elsewhere 
+-->(ie: an api feature tht could say, could be paired with a dating app to match two users with similar profiles, or plug in profile with a chatbot to have a life like conversation with them. say, a profile of a dead loved one for instance). 
+
+
+-this dataset/model can also be plugged into a chatbot/llm feature in which a machine parses the users psychological profile and helps them as is seen fit. this is also a main point of functionality, in which the chatbot will append user findings into their evolving psychological profile. 
+
+-this is also where the user can paste relevant files, social links, or things of that sort to be parsed, appended, and further utilized by the program. 
+
+-key functionality: to build a model that replicates human consciousness and builda a wrokable 'profiling', that will be able to be developed with interaction with the app and then further downloaded and redistributed as seen fit. maybe a future api addition would be useful here
+
