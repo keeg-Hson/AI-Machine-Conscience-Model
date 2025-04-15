@@ -29,7 +29,7 @@ I wrote the following in like 5 minutes waiting for a coffee, but this highlight
 -algorithm to act as 'subset' of users mind/psyche; this is effectively like porting the users conscious stream/sentience into a machine enviornment. 
 
 -this model will also be able to be downloaded (its cognitive workings/profile indicidual user data collective), with the user being able to take their conscious digital profile and port the associated curated dataset/trained ml model elsewhere 
--->(ie: an api feature tht could say, could be paired with a dating app to match two users with similar profiles, or plug in profile with a chatbot to have a life like conversation with them. an automated emailing response system, automated text messages, possibly even phone calls all would be completely doable in theory). 
+-->(ie: an api feature tht could say, could be paired with a dating app to match two users with similar profiles, or plug in profile with a chatbot to have a life like conversation with them. an automated emailing response system, automated text messages, possibly even phone calls all would be completely doable in theory once rendered with an API funcitonality). 
 
 
 -this dataset/model can also be plugged into a chatbot/llm feature in which a machine parses the users psychological profile and helps them as is seen fit. this is also a main point of functionality, in which the chatbot will append user findings into their evolving psychological profile. 
