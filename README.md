@@ -1,6 +1,6 @@
 # OrphicaAI
 
-Hello there!
+## Hello there!
 ![OrphicaAI_GitHub_Social_Preview](https://github.com/user-attachments/assets/17f5bc23-d591-48a3-8eb5-f3bef98a6ca9)
 
 ## ok, here we are
