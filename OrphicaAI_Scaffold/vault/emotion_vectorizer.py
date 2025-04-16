@@ -7,6 +7,8 @@
 ##will append dict classification, with an associated score (0-1) for each emotional category (closer to 1; higher user importance)
 ###example: {contentment: 0.8, distress: 0.2, etc...}
 
+#USE: for: emotionla tagging in EchoVault, Determining memnory salience, future introspective processing
+
 ######-----STEPS-----#######
 #1. Import necessary libraries
 ##kinda goes without saying lel
@@ -28,9 +30,10 @@ EMOTION_CATEGORIES = [ #temporary placeholder for emotional categories
 ]
 
 #3. placeholder emotional keyword dict
-##to be replaced with actual ML logic later on!
+
+###------------to be replaced with actual ML logic later on!--------###
 ##for prototyping purposes, we will define a preset array of keywords associated with each emotional category
-EMOTION_KEYWORDS={ #"EMOTION_LABEL": ["WROD1", "WORD2", "WORD3", ...]
+EMOTION_KEYWORDS={ #"EMOTION_LABEL": ["WORD1", "WORD2", "WORD3", ...]
     
     #EXAMPLES:
     "contentment": ["happy", "satisfied", "pleased"],
@@ -53,7 +56,7 @@ def preprocess(text:str)->str:
     deals with normalization, lowercasing, and preparing text entires for further processing
     """
 
-    return cleaned_text #to be defined later on: will effectively be  our final cleared up outputs
+    return text.lower() #lowercase normalization #to be defined later on: will effectively be  our final cleared up outputs
 
 
 #5. emotional processing logic
@@ -65,6 +68,16 @@ def classify_emotions(text:str) -> dict:
     """
 
     text = preproccess(text) #preprocess to be defined here
+    scores={emotion:0.0 for emotion in EMOTION_CATEGORIES} #initializes or dictionary for results
+    
+    for emotion, keywords in EMOTION_KEYWORDS.items():
+        for word in keywords:
+            if word in text:
+                scores[emotion] += 1 #incrementiong emotional scoring upon detected mathc
+
+    #stripping of 0s for cleaner output
+    emotion_vector={k: v for k, v in scores.items() if v > 0}
+    return emotion_vector #returns dictionary of emotional scores, as per the user input
 
     emotion_scores={ #initializes or dictionary for results
 
@@ -81,6 +94,15 @@ def classify_emotions(text:str) -> dict:
 
 #Step 6: intensity estimation:
 def estimate_intensity(text:str) -> float:
+    text=preprocess(text) #preprocess to be defined here
+    match_count=0 #initializes match count
+    for keywords in EMOTION_KEYWORDS.values():
+        for word in keywords:
+            if word in text:
+                match_count+=1 #incrementing upon detected match
+
+    intensity_score = min(match_count/5.0,1.0) #crude normalizatoin
+    return round(intensity_score,3)
     """ 
     placeholder function for future use: poses as an estimator for how emotionally 'intense' a a given entry is.
     #to be used fro adjusting memory salience factor
@@ -90,7 +112,8 @@ def estimate_intensity(text:str) -> float:
     exclamations, repetition, strong word densities as far as idea importance/reinforcement patterns are concerned, 
     even word capitalization (etc etc etc.).... 
     """
-    return intensity_score #returns valuation between 0.0 and 1.0 (TO BE DEFINED!)
+
+    #return intensity_score #returns valuation between 0.0 and 1.0 (TO BE DEFINED!)
 
 
     
