@@ -28,6 +28,7 @@ EMOTION_CATEGORIES = [ #temporary placeholder for emotional categories
     "fear",
     "sadness",
     "joy",
+    "grief",
     "anticipation",
     "surprise",
     "disgust",
