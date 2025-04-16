@@ -55,8 +55,9 @@ def preprocess(text:str)->str:
     to serve purpose of cleaning up text inputs. 
     deals with normalization, lowercasing, and preparing text entires for further processing
     """
-
-    return text.lower() #lowercase normalization #to be defined later on: will effectively be  our final cleared up outputs
+    text=text.lower()
+    text=re.sub(r'[^\w\s]', '', text) #removes punctuation
+    return text #lowercase normalization #to be defined later on: will effectively be  our final cleared up outputs
 
 
 #5. emotional processing logic
@@ -79,18 +80,6 @@ def classify_emotions(text:str) -> dict:
     emotion_vector={k: v for k, v in scores.items() if v > 0}
     return emotion_vector #returns dictionary of emotional scores, as per the user input
 
-    emotion_scores={ #initializes or dictionary for results
-
-    #for each emotional category: 
-    #search for presence of keywords/patterns in text contents
-    #if matched:
-    ##increase score of that specific emotion   
-
-    #OPTIONAL: normalize scores, so that they cumulatively summate to 1.0
-
-    } 
-
-    return emotion_scores #returns dictionary of emotional scores, as per the user input
 
 #Step 6: intensity estimation:
 def estimate_intensity(text:str) -> float:
