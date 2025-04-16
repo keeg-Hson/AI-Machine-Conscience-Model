@@ -28,6 +28,7 @@ EMOTION_CATEGORIES = [ #temporary placeholder for emotional categories
     "fear",
     "sadness",
     "joy",
+    "anticipation",
     "surprise",
     "disgust",
     "neutral", 
@@ -78,7 +79,9 @@ def classify_emotions(text:str) -> dict:
     for emotion, keywords in EMOTION_KEYWORDS.items():
         for word in keywords:
             if word in text:
-                scores[emotion] += 1 #incrementiong emotional scoring upon detected mathc
+                scores[emotion] += 1 #incrementiong emotional scoring upon detected match
+            else:
+                scores[emotion] += 1.0 #automatically adds if otherwise missing
     
     total=sum(scores.values()) #sums all emotional scores
     if total > 0:
