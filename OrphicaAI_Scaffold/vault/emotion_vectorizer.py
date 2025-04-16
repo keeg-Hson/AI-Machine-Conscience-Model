@@ -81,8 +81,7 @@ def classify_emotions(text:str) -> dict:
         for word in keywords:
             if word in text:
                 scores[emotion] += 1 #incrementiong emotional scoring upon detected match
-            else:
-                scores[emotion] += 1.0 #automatically adds if otherwise missing
+
     
     total=sum(scores.values()) #sums all emotional scores
     if total > 0:
@@ -121,7 +120,7 @@ def estimate_intensity(text:str) -> float:
 
 #---for debugging purposes!---!
 if __name__ == "__main__":
-    sample = "I was quite worried about everything, yet still hopeful nonetheless."
+    sample = "It was seriously the coolest thing ever — I felt such joy and excitement!"
     print("Emotion Vector:", classify_emotions(sample))
     print("Intensity Score:", estimate_intensity(sample))
 
