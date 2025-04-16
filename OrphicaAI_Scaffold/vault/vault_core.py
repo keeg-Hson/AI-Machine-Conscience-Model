@@ -1,14 +1,14 @@
 # Vault Core
 from datetime import datetime  #for timestamping new memories
 from uuid import uuid4 #generation of unique IDs for each memory entry in question
-from .emotion_vectorizer import classify_emotions #Analyzes the emotional tone associated with eahc piece of contetn
+from .emotion_vectorizer import classify_emotions, estimate_intensity #Analyzes the emotional tone associated with eahc piece of contetn
 from .symbolic_index import tag_entry, find_symbolic_associations #symbolic tagging/index linking fucntionality
 from .decay import decay_weights, reinforce_entry #weighting and decay of memory entries
+
 
 #TEMPORARY: in-built memory store for prototyping purposes
 VAULT={} #MAIN MEMORY VAULT (OR "SUBCONSCIOUS" MEMORY BANK EFFECGTIVELY)
 SYMBOLIC_INDEX={} #SYMBOL TO ENTRY LOOKIP TABLE (SIMILAR TO ARCHETYOPAL ANCHORS OR THEMATIC LINKS)
-
 
 
 ##Core Entry Structure
@@ -22,7 +22,11 @@ def create_entry(content: str, metadata:dict={}) -> dict:
     entry_id=str(uuid4()) #generation of a unique user ID for given memory entry
     timestamp=metadata.get('timestamp', datetime.utcnow().isoformat()) #use of currently existtent timestamp, or generation of a new one is deemed necessary
 
+    #emotional tagging
     emotion_vector=classify_emotions(content) #deals with assessment of emotional makeup and associated undertimes, context of content in question
+    intensity_score = estimate_intensity(content) #estimation of emotional intensity associated with user input (TBD: to be used for salience factor)
+    
+    #symbolic tagging
     symbols=find_symbolic_associations(content) #deals with extraction of symbolic tags, as per the user input. could take form in the shape of recurring themes, images, archetypes, etc.
 
     #creation of full memory entry object
@@ -32,7 +36,7 @@ def create_entry(content: str, metadata:dict={}) -> dict:
         'content': content, #raw user input (be that thought, journal, audio file, etc etc etc.)
         'tags': symbols, #symobic tags associated with associated user content 
         'emotion_vector': emotion_vector, #emotional mapping (ex: {'distress': 0.7})
-        'depth_weight': 1.0, #how 'deep' a given memory is to the user, effectively a scale of emotinal relevance/importance
+        'depth_weight': intensity_score, #how 'deep' a given memory is to the user, effectively a scale of emotinal relevance/importance: now directly wired up to "emotional charge"
         'retrieval_decay': 0.01, #rate at which memory faces if memory not reinforced
         "associations": [], #linking to other related memories or user entries/inputs (can be filled out later)
     }  
@@ -56,7 +60,7 @@ def recall_by_symbol(symbol:str, max_results: int=5) -> list:
     associated_ids=SYMBOLIC_INDEX.get(symbol, [])[:max_results] #links memory IDs to relevant symbols
     return [VAULT[entry_id] for entry_id in associated_ids if entry_id in VAULT] #RETURNS FULL MEMORY OBJECTS 
 
-def resurface_candidate(context_vector:dict) -> list:
+def resurface_candidates(context_vector:dict) -> list:
     """
     returns a list of letent memories that are likely to become relevant to user down the road.
     -would compare embeddings/emotinal vectors within full release
