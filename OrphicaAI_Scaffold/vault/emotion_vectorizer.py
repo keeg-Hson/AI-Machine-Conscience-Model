@@ -16,9 +16,35 @@
 ##categories to be pre defined here
 ###append values as necessary
 
+EMOTION_CATEGORIES = [ #temporary placeholder for emotional categories
+    "contentment",
+    "distress",
+    "anger",
+    "fear",
+    "sadness",
+    "joy",
+    "surprise",
+    "disgust"
+]
+
 #3. placeholder emotional keyword dict
 ##to be replaced with actual ML logic later on!
 ##for prototyping purposes, we will define a preset array of keywords associated with each emotional category
+EMOTION_KEYWORDS={ #"EMOTION_LABEL": ["WROD1", "WORD2", "WORD3", ...]
+    
+    #EXAMPLES:
+    "contentment": ["happy", "satisfied", "pleased"],
+    "distress": ["sad", "unhappy", "displeased"],
+    "anger": ["angry", "furious", "mad"],
+    "fear": ["scared", "afraid", "terrified"],
+    "sadness": ["depressed", "down", "blue"],
+    "joy": ["joyful", "elated", "cheerful"],
+    "surprise": ["shocked", "astonished", "amazed"],
+    "grief": ["loss", "death", "cry", "funeral"],
+    "anticipation": ["excited", "eager", "hopeful"],
+    "disgust": ["disgusted", "repulsed", "nauseated"]
+
+}
 
 #4. processing logic
 def preprocess(text:str)->str:
