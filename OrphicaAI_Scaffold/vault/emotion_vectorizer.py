@@ -67,7 +67,7 @@ def classify_emotions(text:str) -> dict:
     #all summate to 1.0, or at least should in theory.
     """
 
-    text = preproccess(text) #preprocess to be defined here
+    text = preprocess(text) #preprocess to be defined here
     scores={emotion:0.0 for emotion in EMOTION_CATEGORIES} #initializes or dictionary for results
     
     for emotion, keywords in EMOTION_KEYWORDS.items():
