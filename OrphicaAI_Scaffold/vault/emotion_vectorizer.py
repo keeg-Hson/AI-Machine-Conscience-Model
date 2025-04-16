@@ -12,6 +12,9 @@
 ######-----STEPS-----#######
 #1. Import necessary libraries
 ##kinda goes without saying lel
+import re #regex processing 
+from collections import defaultdict
+
 
 #2. define emotional categories: 
 ##to form basis of 'emotional vector' space
@@ -75,6 +78,13 @@ def classify_emotions(text:str) -> dict:
         for word in keywords:
             if word in text:
                 scores[emotion] += 1 #incrementiong emotional scoring upon detected mathc
+    
+    total=sum(scores.values()) #sums all emotional scores
+    if total > 0:
+        for k in scores:
+            scores[k]=round(scores[k]/total,3) #normalizes our emotioal vector to sumamte to 1.0
+    else:
+        scores['neutral']=1.0 #if no matches, neutral score of 1.0 is assigned by default
 
     #stripping of 0s for cleaner output
     emotion_vector={k: v for k, v in scores.items() if v > 0}
