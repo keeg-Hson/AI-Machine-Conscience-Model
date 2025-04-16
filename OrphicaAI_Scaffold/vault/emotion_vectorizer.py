@@ -29,7 +29,8 @@ EMOTION_CATEGORIES = [ #temporary placeholder for emotional categories
     "sadness",
     "joy",
     "surprise",
-    "disgust"
+    "disgust",
+    "neutral", 
 ]
 
 #3. placeholder emotional keyword dict
@@ -113,6 +114,12 @@ def estimate_intensity(text:str) -> float:
     """
 
     #return intensity_score #returns valuation between 0.0 and 1.0 (TO BE DEFINED!)
+
+#---for debugging purposes!---!
+if __name__ == "__main__":
+    sample = "I was quite worried about everything, yet still hopeful nonetheless."
+    print("Emotion Vector:", classify_emotions(sample))
+    print("Intensity Score:", estimate_intensity(sample))
 
 
     
