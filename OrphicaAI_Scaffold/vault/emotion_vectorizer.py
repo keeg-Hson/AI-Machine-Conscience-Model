@@ -138,7 +138,7 @@ def estimate_intensity(text:str) -> float:
 
 #---for debugging purposes!---!
 if __name__ == "__main__":
-    sample = "It was seriously the coolest thing ever — I felt such joy and excitement!"
+    sample = "Not everything you lost was meant to stay. Some things left to make space for your real self to return."
     print("Emotion Vector:", classify_emotions(sample))
     print("Intensity Score:", estimate_intensity(sample))
 
