@@ -5,10 +5,10 @@ from .emotion_vectorizer import classify_emotions, estimate_intensity #Analyzes 
 from .symbolic_index import tag_entry, find_symbolic_associations #symbolic tagging/index linking fucntionality
 from .decay import decay_weights, reinforce_entry #weighting and decay of memory entries
 from vault.persistence import save_memory_to_archive
-from .persistence import save_memory_to_archive
+from .persistence import load_memory_archive, save_memory_to_archive 
 
 #TEMPORARY: in-built memory store for prototyping purposes
-VAULT={} #MAIN MEMORY VAULT (OR "SUBCONSCIOUS" MEMORY BANK EFFECGTIVELY)
+VAULT=load_memory_archive() #MAIN MEMORY VAULT (OR "SUBCONSCIOUS" MEMORY BANK EFFECGTIVELY)
 SYMBOLIC_INDEX={} #SYMBOL TO ENTRY LOOKIP TABLE (SIMILAR TO ARCHETYOPAL ANCHORS OR THEMATIC LINKS)
 
 
@@ -89,3 +89,13 @@ def decay_all():
     global dacay tick: lowers the weighting factor associated with all user entires over time.
     """
     decay_weights(VAULT) #CALLS DECAY FUNCTION TO AGE ALL ASSOCIATED MEMORY ENTRIES
+
+def recall_by_emotion(emotion: str, max_results:int=5) -> list:
+    #retreval of user 'emotions' by category
+    filtered=[
+        entry for entry in VAULT.values()
+        if emotion in entry["emotion_vector"] 
+    ]
+
+    return sorted(filtered, key=lambda e: -e["emotion_vector"][emotion])[:max_results] #sorts by emotional weight, returns top matches
+

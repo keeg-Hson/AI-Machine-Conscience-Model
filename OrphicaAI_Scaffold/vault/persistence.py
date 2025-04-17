@@ -18,3 +18,15 @@ def save_memory_to_archive(entry:dict):
     with open(MEMORY_PATH, "w") as f:
         json.dump(memories, f, indent=2)
     print(f"Memory archived! Total entries: {len(memories)}") #confirms successful save
+
+def load_memory_archive():
+    #loads existing memory entires from archive
+    #returns dict of ID->entry for fast lookup
+
+    if not MEMORY_PATH.exists():
+        return {}
+    
+    with open(MEMORY_PATH, "r") as f:
+        memories=json.load(f)
+
+    return {entry['id']: entry for entry in memories} #returns dict of ID->entry for fast lookup
