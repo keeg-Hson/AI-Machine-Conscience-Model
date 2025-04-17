@@ -14,6 +14,20 @@
 ##kinda goes without saying lel
 import re #regex processing 
 from collections import defaultdict
+from nltk.corpus import wordnet #for expanded keyword matching
+
+#deals with keyword matching via nltk
+def expand_keywords(base_keywords):
+    """
+    Expands the base keywords using WordNet synonyms.
+    """
+    expanded = set()
+    for word in base_keywords:
+        expanded.add(word)
+        for syn in wordnet.synsets(word):
+            for lemma in syn.lemmas():
+                expanded.add(lemma.name().replace("_" , " ").lower())
+    return list(expanded)
 
 
 #2. define emotional categories: 
@@ -31,9 +45,22 @@ EMOTION_CATEGORIES = [ #temporary placeholder for emotional categories
     "grief",
     "anticipation",
     "surprise",
-    "disgust",
-    "neutral", 
+    "disgust", 
 ]
+
+#BASE EMOTION KEYWORDS
+BASE_EMOTION_KEYWORDS = {
+    "joy": ["joy", "happy", "delight"],
+    "sadness": ["sad", "unhappy", "gloom"],
+    "fear": ["fear", "scared", "terrified"],
+    "anger": ["angry", "mad", "furious"],
+    "grief": ["loss", "cry", "mourning"],
+    "anticipation": ["excited", "hopeful", "eager"],
+    "surprise": ["shocked", "amazed", "astonished"],
+    "disgust": ["disgusted", "repulsed", "nauseated"],
+    "contentment": ["satisfied", "calm", "peaceful"],
+    "distress": ["anxious", "nervous", "troubled"]
+}
 
 #3. placeholder emotional keyword dict
 
@@ -41,17 +68,8 @@ EMOTION_CATEGORIES = [ #temporary placeholder for emotional categories
 ##for prototyping purposes, we will define a preset array of keywords associated with each emotional category
 EMOTION_KEYWORDS={ #"EMOTION_LABEL": ["WORD1", "WORD2", "WORD3", ...]
     
-    #EXAMPLES:
-    "contentment": ["happy", "satisfied", "pleased"],
-    "distress": ["sad", "unhappy", "displeased"],
-    "anger": ["angry", "furious", "mad"],
-    "fear": ["scared", "afraid", "terrified"],
-    "sadness": ["depressed", "down", "blue"],
-    "joy": ["joyful", "elated", "cheerful"],
-    "surprise": ["shocked", "astonished", "amazed"],
-    "grief": ["loss", "death", "cry", "funeral"],
-    "anticipation": ["excited", "eager", "hopeful"],
-    "disgust": ["disgusted", "repulsed", "nauseated"]
+    emotion: expand_keywords(keywords)
+    for emotion, keywords in BASE_EMOTION_KEYWORDS.items()
 
 }
 
