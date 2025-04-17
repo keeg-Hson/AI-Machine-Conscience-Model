@@ -7,6 +7,9 @@
 ###"mirror", "sunset", "ocean", "rebirth", "ideal" - All bare similar relevance here, all of these posing as symbolic tag hypotheticals to work with for testing and debugging purposes
 #to also support future ontologically based semantic expression
 
+#libraries/importations
+import re
+
 #-----FUNCTIONS:-----#
 #1.1 Symbolic indexing
 #to act as a sort of temporary memory based mapping mechanism
@@ -16,9 +19,32 @@
 #1.2 LOOKUP TABLE FUNCTIONALITY:
 SYMBOLIC_INDEX={} #EXAMPLE OUTPUT: {'ideal': ['entry_id_1', 'entry_id_2'], 'mirror': ['entry_id_3', 'entry_id_4']}
 
+#1.3 base sybolic tag keyword mapping
+SYMBOLIC_MAP={
+    "mirror": ["reflection", "self", "identity", "mirror"],
+    "sunset": ["sunset", "evening", "dusk", "golden"],
+    "ocean": ["ocean", "sea", "tide", "wave", "shore"],
+    "rebirth": ["transformation", "change", "new", "again", "begin"],
+    "ideal": ["perfect", "ideal", "pure", "untouched"],
+    "grief": ["loss", "grief", "cry", "funeral"],
+    "innocence": ["childhood", "innocence", "play", "naive"],
+    "conflict": ["fight", "war", "battle", "struggle"],
+    "hope": ["light", "hope", "faith", "believe"],
+    "nostalgia": ["memory", "past", "old", "used to"],
+}
+
+#preprocesses text to normalize it
+def preprocess(text:str)->str:
+    return re.sub(r'[^\w\s]', '', text).lower() #removes punctuation and lowercases the text
+
 
 #2. entry tagging
 def tag_entry(entry_id:str, symbols:list):
+    for symbol in symbols:
+        if symbol not in SYMBOLIC_INDEX:
+            SYMBOLIC_INDEX[symbol] = [] #create empty list if symbol not in index
+        if entry_id not in SYMBOLIC_INDEX[symbol]:
+            SYMBOLIC_INDEX[symbol].append(entry_id)
     """
     Appends associated symbolic tags to each entry ID to our index
     -to be called by out *vault_core* when a new entry is recorded/created
@@ -51,7 +77,16 @@ def find_symbolic_associations(text:str) -> list:
     -----------
 
     """
-    extracted_symbols=[] #list of extracted symbols: will pose as our customizable empty list to be added to as per users needs
+    text=preprocess(text)
+    matched=[]
+    for symbol, keywords in SYMBOLIC_MAP.items():
+        for word in keywords:
+            if word in text:
+                matched.append(symbol)
+                break
+    return matched 
+    
+    #extracted_symbols=[] #list of extracted symbols: will pose as our customizable empty list to be added to as per users needs
 
 
     """
@@ -71,19 +106,16 @@ def find_symbolic_associations(text:str) -> list:
 
     
     """
-    return extracted_symbols #returns list of symbolic tags associated with given user input
+    
 
 #--------OPTIONAL--------#
 #Step 4: retrieval of entries by symbolic valuation
 def get_entries_by_symbol(symbol:str, max_results:int=5) -> list:
+    return SYMBOLIC_INDEX.get(symbol, [])[:max_results]
     """
     -to return entry IDs that are associated with a given keyword (Symbolic tag? TBD)
     -can be utilized by either vault_core.py og exteranally if desired
 
     
     """
-    if symbol in SYMBOLIC_INDEX():
-        return SYMBOLIC_INDEX[symbol][:max_results]
-    #else: #idk if this will be necessary considering the given functionality at play here but whatever
-        return [] #nonreachable, "ELSE" here might be necessary? idek
     
