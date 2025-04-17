@@ -4,7 +4,8 @@ from uuid import uuid4 #generation of unique IDs for each memory entry in questi
 from .emotion_vectorizer import classify_emotions, estimate_intensity #Analyzes the emotional tone associated with eahc piece of contetn
 from .symbolic_index import tag_entry, find_symbolic_associations #symbolic tagging/index linking fucntionality
 from .decay import decay_weights, reinforce_entry #weighting and decay of memory entries
-
+from vault.persistence import save_memory_to_archive
+from .persistence import save_memory_to_archive
 
 #TEMPORARY: in-built memory store for prototyping purposes
 VAULT={} #MAIN MEMORY VAULT (OR "SUBCONSCIOUS" MEMORY BANK EFFECGTIVELY)
@@ -43,6 +44,7 @@ def create_entry(content: str, metadata:dict={}) -> dict:
 
     VAULT[entry_id]=entry #save memory into larger subconscious repository
     tag_entry(entry_id, symbols) #adds tags to symbolic index for retrieval purposes
+    save_memory_to_archive(entry) #saves memory to archive for long-term storage (TBD)
 
     return entry #returns full memory entry object in question. basically, end of the function that concocts all computations together, as 'return' statements generally intend to do X)
 
