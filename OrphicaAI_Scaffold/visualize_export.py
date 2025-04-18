@@ -1,6 +1,6 @@
 #visualize_export (exports memory from chart at users request)
 import dash
-from dash import dcc, html, Input, Output
+from dash import dcc, html, Input, Output, State
 import pandas as pd
 import json
 from datetime import datetime, timedelta
@@ -49,33 +49,67 @@ app.layout=html.Div([
         id="salience-filter"
     ),
 
+    dcc.Dropdown(
+        options=[
+            {"label": "JSON", "value": "json"},
+            {"label": "Text (.txt)", "value": "txt"},
+            {"label": "Markdown (.md)", "value": "md"},
+        ],
+        value="json",
+        id="export-format",
+        placeholder="Choose export format"
+    ),
+
     #memory chart
     dcc.Graph(id="memory-chart"),
 
     #exported memory block
+    html.Button("Download Exported Memory", id="download-btn", n_clicks=0),
+    dcc.Download(id="download-memory"),
     html.Div(id="exported-memory", style={"whiteSpace":"pre-wrap"}),
 ])
 
 @app.callback(
-    Output("exported-memory", "children"),
-    Input("memory-chart", "clickData")
+    Output("download-memory", "data"),                 # triggers file download
+    Output("exported-memory", "children"),             # updates memory preview
+    Input("download-btn", "n_clicks"),                 # triggered by button
+    State("memory-chart", "clickData"),                # uses click data
+    State("export-format", "value"),                   # reads selected format
+    prevent_initial_call=True
 )
 
-def export_memory(clickData):
-    if clickData:
-        point=clickData['points'][0]['pointIndex']
-        memory=df.iloc[point['pointIndex']]
-        export_data={
+#new
+def export_memory(n_clicks, clickData, fmt):
+    if not clickData:
+        return dash.no_update, "Please click a memory first to export it."
+    
+    point_index=clickData["points"][0]["pointIndex"]
+    memory=df.iloc[point_index]
+
+    export_data={
             "timestamp": memory["Timestamp"].isoformat(),
             "emotion": memory["Emotion"],
             "salience": memory["Salience"],
             "content": memory["Content"]
         }
+    
+    filename=f"memory_export.{fmt}"
 
-        with open("data/user_journals/exported_memory.json", "w") as f:
-            json.dump(export_data, f, indent=4)
-        return f"📤 Memory exported:\n{json.dumps(export_data, indent=2)}"
-    return "🖱 Click a memory to export it" 
+    #formatting options
+    if fmt=="json":
+        content=json.dumps(export_data, indent=4)
+    elif fmt=="txt":
+        content=f"Timestamp: {export_data['timestamp']}\nEmotion: {export_data['emotion']}\nSalience: {export_data['salience']}\n\n{export_data['content']}"
+    elif fmt=="md":
+        content=f"# Memory Export\n- **Timestamp:** {export_data['timestamp']}\n- **Emotion:** {export_data['emotion']}\n- **Salience:** {export_data['salience']}\n\n---\n\n{export_data['content']}"
+    else:
+        content = "Invalid format"
+
+    return dcc.send_string(content, filename), f"📤 Memory exported as `{filename}`."
+
+
+#new
+
 
 
 
