@@ -2,14 +2,14 @@
 from datetime import datetime  #for timestamping new memories
 from uuid import uuid4 #generation of unique IDs for each memory entry in question
 from .emotion_vectorizer import classify_emotions, estimate_intensity #Analyzes the emotional tone associated with eahc piece of contetn
-from .symbolic_index import tag_entry, find_symbolic_associations #symbolic tagging/index linking fucntionality
+from .symbolic_index import tag_entry, find_symbolic_associations, SYMBOLIC_INDEX #symbolic tagging/index linking fucntionality
 from .decay import decay_weights, reinforce_entry #weighting and decay of memory entries
 from vault.persistence import save_memory_to_archive
 from .persistence import load_memory_archive, save_memory_to_archive 
+#from utils.symbolic_index import find_symbolic_associations, tag_entry
 
 #TEMPORARY: in-built memory store for prototyping purposes
 VAULT=load_memory_archive() #MAIN MEMORY VAULT (OR "SUBCONSCIOUS" MEMORY BANK EFFECGTIVELY)
-SYMBOLIC_INDEX={} #SYMBOL TO ENTRY LOOKIP TABLE (SIMILAR TO ARCHETYOPAL ANCHORS OR THEMATIC LINKS)
 
 
 ##Core Entry Structure
@@ -39,7 +39,7 @@ def create_entry(content: str, metadata:dict={}) -> dict:
         'emotion_vector': emotion_vector, #emotional mapping (ex: {'distress': 0.7})
         'depth_weight': intensity_score, #how 'deep' a given memory is to the user, effectively a scale of emotinal relevance/importance: now directly wired up to "emotional charge"
         'retrieval_decay': 0.01, #rate at which memory faces if memory not reinforced
-        "associations": [], #linking to other related memories or user entries/inputs (can be filled out later)
+        'associations': [], #linking to other related memories or user entries/inputs (can be filled out later)
     }  
 
     VAULT[entry_id]=entry #save memory into larger subconscious repository
@@ -49,6 +49,7 @@ def create_entry(content: str, metadata:dict={}) -> dict:
     return entry #returns full memory entry object in question. basically, end of the function that concocts all computations together, as 'return' statements generally intend to do X)
 
 
+#memeory retrieval functions
 def get_entry(entry_id:str):
     """
     retrieves user entry by ID

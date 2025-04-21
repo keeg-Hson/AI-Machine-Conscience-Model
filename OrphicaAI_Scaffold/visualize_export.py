@@ -17,18 +17,26 @@ df=pd.DataFrame([{
     "Timestamp": datetime.fromisoformat(m["timestamp"]),
     "Salience": m.get("depth_weight", 0),
     "Emotion": get_primary_emotion(m.get("emotion_vector", {})),
-    "Content":m.get("content","")
-
+    "Content":m.get("content",""),
+    "Tags": ", ".join(m.get("tags", []))
 } for m in raw])
+
+#extraction of all symbolic tags
+all_tags=sorted([tag for tags in df["Tags"] for tag in tags.split(", ") if tag])
+
 
 
 #plotly figure
 fig=px.scatter(
-    df,x="Timestamp", y="Salience", color="Emotion", 
-    hover_data=["Content"], template="plotly_white"
+    df,
+    x="Timestamp", 
+    y="Salience", 
+    color="Emotion", 
+    hover_data=["Content","Emotion", "Salience", "Tags"],
+    template="plotly_white"
 )
 
-#dash app
+#build dash app layout
 app=dash.Dash(__name__) #initialize dash app
 app.layout=html.Div([
     html.H1("🧠 Memory Timeline"),
@@ -49,6 +57,17 @@ app.layout=html.Div([
         id="salience-filter"
     ),
 
+    #symbolic tag dropdaown filter
+    dcc.Dropdown(
+        options=[{"label": tag, "value": tag} for tag in all_tags],
+        multi=True,
+        placeholder="Filter by Symbolic Tag",
+        id="tag-filter"
+    ),
+
+    html.Hr(), #separator, for UI enhanchement purposes
+    html.H3("📤 Export Options"), #labeling export sections
+
     dcc.Dropdown(
         options=[
             {"label": "JSON", "value": "json"},
@@ -61,14 +80,15 @@ app.layout=html.Div([
     ),
 
     #memory chart
-    dcc.Graph(id="memory-chart"),
+    dcc.Graph(id="memory-chart", figure=fig),
 
-    #exported memory block
+    #exported memory block UI
     html.Button("Download Exported Memory", id="download-btn", n_clicks=0),
     dcc.Download(id="download-memory"),
     html.Div(id="exported-memory", style={"whiteSpace":"pre-wrap"}),
 ])
 
+#EXPORTATION OF MEMORY FROM SET SELECTED POINT
 @app.callback(
     Output("download-memory", "data"),                 # triggers file download
     Output("exported-memory", "children"),             # updates memory preview
@@ -90,6 +110,7 @@ def export_memory(n_clicks, clickData, fmt):
             "timestamp": memory["Timestamp"].isoformat(),
             "emotion": memory["Emotion"],
             "salience": memory["Salience"],
+            "tags": memory["Tags"],
             "content": memory["Content"]
         }
     
@@ -99,9 +120,9 @@ def export_memory(n_clicks, clickData, fmt):
     if fmt=="json":
         content=json.dumps(export_data, indent=4)
     elif fmt=="txt":
-        content=f"Timestamp: {export_data['timestamp']}\nEmotion: {export_data['emotion']}\nSalience: {export_data['salience']}\n\n{export_data['content']}"
+        content=f"Timestamp: {export_data['timestamp']}\nEmotion: {export_data['emotion']}\nSalience: {export_data['salience']}\nTags: {export_data['tags']}\n\n{export_data['content']}"
     elif fmt=="md":
-        content=f"# Memory Export\n- **Timestamp:** {export_data['timestamp']}\n- **Emotion:** {export_data['emotion']}\n- **Salience:** {export_data['salience']}\n\n---\n\n{export_data['content']}"
+        content=f"# Memory Export\n- **Timestamp:** {export_data['timestamp']}\n- **Emotion:** {export_data['emotion']}\n- **Salience:** {export_data['salience']}\n- **Tags:** {export_data['tags']}\n\n---\n\n{export_data['content']}"
     else:
         content = "Invalid format"
 
@@ -118,21 +139,27 @@ def export_memory(n_clicks, clickData, fmt):
 @app.callback(
     Output("memory-chart", "figure"),
     Input("emotion-filter", "value"),
-    Input("salience-filter","value")
+    Input("salience-filter","value"),
+    Input("tag-filter", "value")
 )
 
-def update_chart(emotion,salience):
+def update_chart(emotion,salience, tag_filter):
     filtered=df.copy()
     if emotion:
         filtered=filtered[filtered["Emotion"]==emotion]
     filtered=filtered[filtered["Salience"]>=salience]
+
+    if tag_filter:
+        filtered = filtered[filtered["Tags"].apply(lambda t: any(tag in t for tag in tag_filter))]
+
+    
 
     fig=px.scatter(
         filtered,
         x="Timestamp",
         y="Salience",
         color="Emotion",
-        hover_data=["Content", "Emotion", "Salience"],
+        hover_data=["Content", "Emotion", "Salience", "Tags"],
         template="plotly_white"
 
     )
