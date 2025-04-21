@@ -86,6 +86,15 @@ app.layout=html.Div([
     html.Button("Download Exported Memory", id="download-btn", n_clicks=0),
     dcc.Download(id="download-memory"),
     html.Div(id="exported-memory", style={"whiteSpace":"pre-wrap"}),
+
+    html.Hr(),
+
+    #replay controls
+    html.H3("📽️ Replay Mode"),
+    html.Button("▶️ Start Replay", id="start-replay", n_clicks=0),
+    html.Button("⏸ Pause", id="pause-replay", n_clicks=0),
+    dcc.Interval(id="replay-interval", interval=2500, disabled=True),  # replays every 2.5 secs
+    html.Div(id="replay-content", style={"marginTop": "20px", "whiteSpace": "pre-wrap"})
 ])
 
 #EXPORTATION OF MEMORY FROM SET SELECTED POINT
@@ -129,12 +138,6 @@ def export_memory(n_clicks, clickData, fmt):
     return dcc.send_string(content, filename), f"📤 Memory exported as `{filename}`."
 
 
-#new
-
-
-
-
-
 #subsequent callback function
 @app.callback(
     Output("memory-chart", "figure"),
@@ -167,7 +170,46 @@ def update_chart(emotion,salience, tag_filter):
     fig.update_layout(title="🧠 Orphica Memory Timeline (Filtered)", title_font_size=20)
     return fig
 
+#MEMORY REPLAY MODE LOGIC#
+#Replay mode callback
+@app.callback(
+    Output("replay-interval", "disabled"),
+    Input("start-replay", "n_clicks"),
+    Input("pause-replay", "n_clicks"),
+    prevent_initial_call=True
+)
 
+def toggle_replay(start, pause):
+    ctx=dash.callback_context
+    if not ctx.triggered: return dash.no_update
+    triggered_id=ctx.triggered[0]["prop_id"].split(".")[0]
+    return False if triggered_id=="start-replay" else True
+
+#step through memories one by one:
+@app.callback(
+    Output("replay-content", "children"),
+    Input("replay-interval", "n_intervals"),
+    State("replay-content", "children")
+)
+
+def update_replay(n, current_content):
+    if n is None:
+        return dash.no_update
+    memory_list=df.sort_values("Timestamp").to_dict("records")
+    if n >= len(memory_list):
+        return "✅Replay complete!"
+    mem=memory_list[n]
+    return f"""🧠 Timestamp: {mem['Timestamp']}
+
+Emotion: {mem['Emotion']}
+Salience: {mem['Salience']}
+Tags: {mem['Tags']}
+
+{mem['Content']}"""
+
+
+
+#runs app
 if __name__=="__main__":
     app.run(debug=True)
 
