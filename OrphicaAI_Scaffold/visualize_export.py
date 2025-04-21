@@ -93,6 +93,7 @@ app.layout=html.Div([
     html.H3("📽️ Replay Mode"),
     html.Button("▶️ Start Replay", id="start-replay", n_clicks=0),
     html.Button("⏸ Pause", id="pause-replay", n_clicks=0),
+    dcc.Store(id="replay-index", data=0), #syncs replayed dot
     dcc.Interval(id="replay-interval", interval=2500, disabled=True),  # replays every 2.5 secs
     html.Div(id="replay-content", style={"marginTop": "20px", "whiteSpace": "pre-wrap"})
 ])
@@ -138,37 +139,7 @@ def export_memory(n_clicks, clickData, fmt):
     return dcc.send_string(content, filename), f"📤 Memory exported as `{filename}`."
 
 
-#subsequent callback function
-@app.callback(
-    Output("memory-chart", "figure"),
-    Input("emotion-filter", "value"),
-    Input("salience-filter","value"),
-    Input("tag-filter", "value")
-)
 
-def update_chart(emotion,salience, tag_filter):
-    filtered=df.copy()
-    if emotion:
-        filtered=filtered[filtered["Emotion"]==emotion]
-    filtered=filtered[filtered["Salience"]>=salience]
-
-    if tag_filter:
-        filtered = filtered[filtered["Tags"].apply(lambda t: any(tag in t for tag in tag_filter))]
-
-    
-
-    fig=px.scatter(
-        filtered,
-        x="Timestamp",
-        y="Salience",
-        color="Emotion",
-        hover_data=["Content", "Emotion", "Salience", "Tags"],
-        template="plotly_white"
-
-    )
-
-    fig.update_layout(title="🧠 Orphica Memory Timeline (Filtered)", title_font_size=20)
-    return fig
 
 #MEMORY REPLAY MODE LOGIC#
 #Replay mode callback
@@ -188,24 +159,78 @@ def toggle_replay(start, pause):
 #step through memories one by one:
 @app.callback(
     Output("replay-content", "children"),
+    Output("replay-index", "data"),
     Input("replay-interval", "n_intervals"),
     State("replay-content", "children")
 )
 
 def update_replay(n, current_content):
     if n is None:
-        return dash.no_update
+        return dash.no_update, dash.no_update
+    
     memory_list=df.sort_values("Timestamp").to_dict("records")
     if n >= len(memory_list):
-        return "✅Replay complete!"
+        return "✅Replay complete!", dash.no_update
+    
     mem=memory_list[n]
-    return f"""🧠 Timestamp: {mem['Timestamp']}
+    return (
+        f"Timestamp: {mem['Timestamp']}\n\n"
+        f"Emotion: {mem['Emotion']}\n"
+        f"Salience: {mem['Salience']}\n"
+        f"Tags: {mem['Tags']}\n\n"
+        f"{mem['Content']}",
+        n
+    )
 
-Emotion: {mem['Emotion']}
-Salience: {mem['Salience']}
-Tags: {mem['Tags']}
 
-{mem['Content']}"""
+
+#NEW
+@app.callback(
+    Output("memory-chart", "figure"),
+    Input("emotion-filter", "value"),
+    Input("salience-filter","value"),
+    Input("tag-filter", "value"),
+    Input("replay-index", "data"),
+)
+
+def update_chart_combined(emotion,salience,tag_filter,replay_index):
+    ctx=dash.callback_context
+    filtered=df.copy()
+
+    #apply filteres
+    filtered=df.copy()
+    if emotion:
+        filtered=filtered[filtered["Emotion"]==emotion]
+    filtered=filtered[filtered["Salience"]>=salience]
+
+    if tag_filter:
+        filtered=filtered[filtered["Tags"].apply(lambda t: any(tag in t for tag in tag_filter))]
+    
+    #plotting logic
+    fig=px.scatter(
+        filtered,
+        x="Timestamp",
+        y="Salience",
+        color="Emotion",
+        hover_data=["Content", "Emotion", "Salience", "Tags"],
+        template="plotly_white"
+    )
+
+    #if triggered on replay, add highlight
+    if ctx.triggered and "replay-index" in ctx.triggered[0]["prop_id"]:
+        if replay_index is not None and replay_index < len(filtered):
+            highlight = filtered.iloc[[replay_index]]
+            fig.add_scatter(
+                x=highlight["Timestamp"],
+                y=highlight["Salience"],
+                mode="markers",
+                marker=dict(size=16, color="black", symbol="x"),
+                name="Replaying"
+            )
+
+    fig.update_layout(title="Orphica Memory Timeline (Filtered)", title_font_size=20)
+    return fig
+
 
 
 
